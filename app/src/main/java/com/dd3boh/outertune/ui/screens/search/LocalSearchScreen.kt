@@ -50,6 +50,8 @@ import com.dd3boh.outertune.db.entities.Playlist
 import com.dd3boh.outertune.db.entities.Song
 import com.dd3boh.outertune.models.toMediaMetadata
 import com.dd3boh.outertune.playback.queues.ListQueue
+import com.dd3boh.outertune.playback.queues.YouTubeQueue
+import com.zionhuang.innertube.models.WatchEndpoint
 import com.dd3boh.outertune.ui.component.ChipsRow
 import com.dd3boh.outertune.ui.component.EmptyPlaceholder
 import com.dd3boh.outertune.ui.component.LazyColumnScrollbar
@@ -122,7 +124,6 @@ fun LocalSearchScreen(
 
         LazyColumn(
             state = lazyListState,
-//            contentPadding = LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Start).asPaddingValues(),
             modifier = Modifier.weight(1f)
         ) {
             result.map.forEach { (filter, items) ->
@@ -183,16 +184,11 @@ fun LocalSearchScreen(
 
                                 thumbnailSize = thumbnailSize,
                                 onPlay = {
-                                    val songs = result.map
-                                        .getOrDefault(LocalFilter.SONG, emptyList())
-                                        .filterIsInstance<Song>()
-                                        .map { it.toMediaMetadata() }
                                     playerConnection.playQueue(
-                                        ListQueue(
-                                            title = "${context.getString(R.string.queue_searched_songs_ot)} $query",
-                                            items = songs,
-                                            startIndex = songs.indexOfFirst { it.id == item.id }
-                                        ))
+                                        YouTubeQueue(
+                                            endpoint = WatchEndpoint(videoId = item.id)
+                                        )
+                                    )
                                 },
                                 modifier = Modifier.animateItem()
                             )
