@@ -8,7 +8,6 @@
  */
 
 package com.dd3boh.outertune
-
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.os.Build
@@ -130,6 +129,7 @@ import com.dd3boh.outertune.ui.component.shimmer.ShimmerTheme
 import com.dd3boh.outertune.ui.menu.BottomSheetMenu
 import com.dd3boh.outertune.ui.menu.MenuState
 import com.dd3boh.outertune.ui.player.BottomSheetPlayer
+import com.dd3boh.outertune.ui.screens.AiScreen
 import com.dd3boh.outertune.ui.screens.AlbumScreen
 import com.dd3boh.outertune.ui.screens.HistoryScreen
 import com.dd3boh.outertune.ui.screens.HomeScreen
@@ -472,6 +472,9 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
                                 )
                                 {
+                                   composable(Screens.Ai.route) {
+                                       AiScreen(navController = navController)
+                                   }
                                     composable(Screens.Home.route) {
                                         HomeScreen(navController)
                                     }
