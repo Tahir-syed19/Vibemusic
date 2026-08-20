@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Album
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.LibraryMusic
@@ -37,6 +38,7 @@ sealed class Screens(
     data object Playlists : Screens(R.string.playlists, Icons.AutoMirrored.Rounded.QueueMusic, "playlists")
     data object Library : Screens(R.string.library, Icons.Rounded.LibraryMusic, "library")
     data object Player : Screens(R.string.player, Icons.Rounded.PlayCircle, "player")
+    data object Ai : Screens(R.string.playlists, Icons.Rounded.AutoAwesome, "ai")
 
     enum class LibraryFilter {
         ALL, ALBUMS, ARTISTS, PLAYLISTS, SONGS, FOLDERS
@@ -56,6 +58,7 @@ sealed class Screens(
          * L: Playlists
          * M: Library
          * P: Player
+         * X: AI Playlists
          *
          * Not/won't implement
          * Q: Queue
@@ -69,6 +72,7 @@ sealed class Screens(
             Albums to 'B',
             Playlists to 'L',
             Library to 'M',
+            Ai to 'X',
 //            Player to 'P',
         )
 
