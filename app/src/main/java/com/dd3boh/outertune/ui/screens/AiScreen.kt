@@ -1,12 +1,22 @@
 package com.dd3boh.outertune.ui.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -19,77 +29,137 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dd3boh.outertune.AiRepository
+import com.dd3boh.outertune.utils.rememberPreference
 import kotlinx.coroutines.launch
+
+data class AiVibeCategory(
+    val title: String,
+    val subtitle: String,
+    val vibePrompt: String
+)
+
+val vibeCategories = listOf(
+    AiVibeCategory("Daily Vibe Mix", "Tailored to your current mood", "A personalized blend of relaxed and upbeat track recommendations"),
+    AiVibeCategory("Late Night Chill", "Soft, atmospheric, ambient tracks", "Mellow, lofi, atmospheric acoustic and chill songs for late night listening"),
+    AiVibeCategory("Energy & Focus", "High tempo beats to stay productive", "Upbeat instrumental, electronic, and high-energy productivity music"),
+    AiVibeCategory("Deep Discovery", "Hidden gems based on your taste", "Underrated indie and alternative songs matching a modern music lover's vibe")
+)
 
 @Composable
 fun AiScreen(
     navController: NavController
 ) {
-    var prompt by remember { mutableStateOf("") }
-    var resultText by remember { mutableStateOf("") }
-    var apiKey by remember { mutableStateOf("") }
+    var apiKey by rememberPreference("gemini_api_key", "")
+    var activeVibe by remember { mutableStateOf<AiVibeCategory?>(null) }
+    var generatedPlaylist by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
         Text(
-            text = "AI Song Recommender",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
+            text = "AI Playlists",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        OutlinedTextField(
-            value = apiKey,
-            onValueChange = { apiKey = it },
-            label = { Text("Gemini API Key") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = prompt,
-            onValueChange = { prompt = it },
-            label = { Text("Describe the mood, vibe, or genre...") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = {
-                if (prompt.isNotBlank() && apiKey.isNotBlank()) {
-                    isLoading = true
-                    scope.launch {
-                        resultText = AiRepository.fetchRecommendations(prompt, apiKey)
-                        isLoading = false
-                    }
-                }
-            },
-            enabled = !isLoading,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(if (isLoading) "Generating..." else "Get Recommendations")
+        // API Key Field (Stored in preferences)
+        if (apiKey.isEmpty()) {
+            OutlinedTextField(
+                value = apiKey,
+                onValueChange = { apiKey = it },
+                label = { Text("Enter Gemini API Key once to enable AI Playlists") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // Vibe Grid Section
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.height(260.dp)
+        ) {
+            items(vibeCategories) { vibe ->
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    modifier = Modifier
+                        .height(110.dp)
+                        .clickable {
+                            if (apiKey.isNotBlank()) {
+                                activeVibe = vibe
+                                isLoading = true
+                                scope.launch {
+                                    generatedPlaylist = AiRepository.fetchRecommendations(vibe.vibePrompt, apiKey)
+                                    isLoading = false
+                                }
+                            }
+                        }
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = vibe.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = vibe.subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
 
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else if (resultText.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Dynamic Playlist Output Area
+        activeVibe?.let { vibe ->
             Text(
-                text = resultText,
-                style = MaterialTheme.typography.bodyLarge
+                text = vibe.title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
+
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (generatedPlaylist.isNotEmpty()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = generatedPlaylist,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
         }
     }
 }
-
