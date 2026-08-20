@@ -38,7 +38,7 @@ sealed class Screens(
     data object Playlists : Screens(R.string.playlists, Icons.AutoMirrored.Rounded.QueueMusic, "playlists")
     data object Library : Screens(R.string.library, Icons.Rounded.LibraryMusic, "library")
     data object Player : Screens(R.string.player, Icons.Rounded.PlayCircle, "player")
-    data object Ai : Screens(R.string.playlists, Icons.Rounded.AutoAwesome, "ai")
+    data object Ai : Screens(R.string.ai, Icons.Rounded.AutoAwesome, "ai")
 
     enum class LibraryFilter {
         ALL, ALBUMS, ARTISTS, PLAYLISTS, SONGS, FOLDERS
