@@ -73,7 +73,7 @@ fun AiScreen(
         )
 
         // API Key Field (Stored in preferences)
-        if (apiKey.isEmpty()) {
+        if (apikey.isNullOrEmpty()) {
             OutlinedTextField(
                 value = apiKey,
                 onValueChange = { apiKey = it },
