@@ -53,7 +53,7 @@ val vibeCategories = listOf(
 fun AiScreen(
     navController: NavController
 ) {
-    var apiKey by rememberPreference("gemini_api_key", "")
+    val apiKey = rememberPreference(stringPreferencesKey("gemini_api_key"), defaultValue = "")
     var activeVibe by remember { mutableStateOf<AiVibeCategory?>(null) }
     var generatedPlaylist by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
