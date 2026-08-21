@@ -73,10 +73,10 @@ fun AiScreen(
         )
 
         // API Key Field (Stored in preferences)
-        if (apikey.isNullOrEmpty()) {
+        if (apiKey.value.isNullOrEmpty()) {
             OutlinedTextField(
-                value = apiKey,
-                onValueChange = { apiKey = it },
+                value = apiKey.value,
+                onValueChange = { apiKey.value = it },
                 label = { Text("Enter Gemini API Key once to enable AI Playlists") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,11 +101,11 @@ fun AiScreen(
                     modifier = Modifier
                         .height(110.dp)
                         .clickable {
-                            if (apiKey.isNotBlank()) {
+                            if (apiKey.value.isNotBlank()) {
                                 activeVibe = vibe
                                 isLoading = true
                                 scope.launch {
-                                    generatedPlaylist = AiRepository.fetchRecommendations(vibe.vibePrompt, apiKey)
+                                    generatedPlaylist = AiRepository.fetchRecommendations(vibe.vibePrompt, apiKey.value)
                                     isLoading = false
                                 }
                             }
@@ -164,4 +164,3 @@ fun AiScreen(
         }
     }
 }
-
