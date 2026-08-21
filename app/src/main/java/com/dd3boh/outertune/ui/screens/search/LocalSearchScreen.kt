@@ -67,7 +67,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlin.math.roundToInt
-import com.zionhuang.innertube.models.WatchEndpoint
 
 @OptIn(FlowPreview::class)
 @Composable
