@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.dd3boh.outertune.AiRepository
 import com.dd3boh.outertune.utils.rememberPreference
 import kotlinx.coroutines.launch
+import androidx.datastore.preferences.core.stringPreferencesKey
 
 data class AiVibeCategory(
     val title: String,
