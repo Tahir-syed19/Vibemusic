@@ -16,6 +16,12 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Initialize and update submodules
+        run: |
+          git submodule init
+          git submodule update --recursive
 
       - name: set up JDK 21
         uses: actions/setup-java@v4
@@ -28,8 +34,7 @@ jobs:
         run: yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Build debug APK and run jvm tests
-        run: ./gradlew compileCoreDebugKotlin --info
-
+        run: ./gradlew assembleCoreDebug --console=plain
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
